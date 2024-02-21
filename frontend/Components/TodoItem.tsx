@@ -15,7 +15,10 @@ import {
     MDBTooltip,
 
 } from "mdb-react-ui-kit";
-
+import { ToastContainer, toast } from 'react-toastify';
+import { confirmAlert } from 'react-confirm-alert';
+import 'react-toastify/dist/ReactToastify.css';
+import 'react-confirm-alert/src/react-confirm-alert.css';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPen, faTrashCan, faListCheck, faPlus } from '@fortawesome/free-solid-svg-icons';
@@ -50,12 +53,29 @@ const ListTodos = () => {
     }, []);
 
     const deleteTodo = async (id: any) => {
-        try {
-            await axios.delete(`http://localhost:5001/todos/${id}`);
-            setTodos((prevInterns: any) => prevInterns.filter((todo: any) => todo.id !== id));
-        } catch (error) {
-            console.error('Error deleting intern:', error);
-        }
+        confirmAlert({
+            title: 'Confirm Deletion',
+            message: 'Are you sure you want to delete this todo?',
+            buttons: [
+                {
+                    label: 'Yes',
+                    onClick: async () => {
+                        try {
+                            await axios.delete(`http://localhost:5001/todos/${id}`);
+                            setTodos((prevInterns: any) => prevInterns.filter((todo: any) => todo.id !== id));
+                            toast.success('Todo Deleted');
+                        } catch (error) {
+                            console.error('Error deleting todo:', error);
+                            toast.error('Error deleting todo. Please try again.');
+                        }
+                    }
+                },
+                {
+                    label: 'No',
+                    onClick: () => { /* Do nothing on "No" click */ }
+                }
+            ]
+        });
     };
 
     return (
@@ -143,6 +163,7 @@ const ListTodos = () => {
                     </MDBRow>
                 </MDBContainer>
             </section>
+            <ToastContainer />
         </>
     );
 };

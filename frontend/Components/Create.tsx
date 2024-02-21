@@ -2,6 +2,8 @@ import axios from "axios";
 import { useState } from "react";
 import { useNavigate } from "react-router";
 
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const Create = () => {
     const [name, setName] = useState("");
@@ -9,35 +11,39 @@ const Create = () => {
 
     const navigate = useNavigate();
 
-    const handleSubmit = (e: React.FormEvent) => {
+
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+
         // Validation
         if (!name) {
-            alert("Please fill the required fields.");
+            toast.error("Please fill the required fields.");
             return;
         }
 
-        axios.post("http://localhost:5001/todos", {
-            name: name,
-            isCompleted: isCompleted
-        })
-            .then(() => {
-                alert("Todo Added");
-                navigate('/');
-            })
-            .catch(error => {
-                console.error("Error adding todo", error);
-                alert("Error adding todo. Please try again.");
+        try {
+            await axios.post("http://localhost:5001/todos", {
+                name: name,
+                isCompleted: isCompleted
             });
+            alert('Intern Added');
+            navigate('/');
+
+        } catch (error) {
+            console.error("Error adding todo", error);
+            toast.error("Error adding todo. Please try again.");
+        }
     };
+
 
     return (
         <>
+
             <div className="m-2 p-5">
                 <div className="d-flex">
                     <h2 className="">Add Todo</h2>
                 </div>
-                <form onSubmit={handleSubmit}>
+                <form onSubmit={handleSubmit} >
                     <div className="mb-3">
                         <label className="form-label">Name</label>
                         <input
@@ -48,17 +54,19 @@ const Create = () => {
                     </div>
                     <div className="mb-3 form-check">
                         <input type="checkbox" className="form-check-input" onChange={(e) => setisCompleted(e.target.checked)} />
-                        <label className="form-check-label" >Is Complete</label>
+                        <label className="form-check-label">Is Complete</label>
                     </div>
 
                     <button
                         type="submit"
                         className="btn btn-primary"
+
                     >
                         Submit
                     </button>
                 </form>
             </div>
+            <ToastContainer />
         </>
     );
 };
