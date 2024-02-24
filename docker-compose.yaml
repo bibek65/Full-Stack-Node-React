@@ -1,0 +1,31 @@
+version: '3'
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: ./backend/Dockerfile
+      target: backend
+    ports:
+      - "5001:5001"
+    volumes:
+      - ./backend:/app/backend
+
+  database:
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+      target: database
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+
+  frontend:
+    build:
+      context: .
+      dockerfile: ./frontend/Dockerfile
+      target: frontend
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./frontend:/app/frontend
